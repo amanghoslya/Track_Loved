@@ -1,0 +1,81 @@
+// To parse this JSON data, do
+//
+//     final otpVerifyResModel = otpVerifyResModelFromJson(jsonString);
+
+import 'dart:convert';
+
+OtpVerifyResModel otpVerifyResModelFromJson(String str) => OtpVerifyResModel.fromJson(json.decode(str));
+
+String otpVerifyResModelToJson(OtpVerifyResModel data) => json.encode(data.toJson());
+
+class OtpVerifyResModel {
+    bool? success;
+    String? message;
+    Data? data;
+
+    OtpVerifyResModel({
+        this.success,
+        this.message,
+        this.data,
+    });
+
+    factory OtpVerifyResModel.fromJson(Map<String, dynamic> json) => OtpVerifyResModel(
+        success: json["success"],
+        message: json["message"],
+        data: json["data"] == null ? null : Data.fromJson(json["data"]),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "success": success,
+        "message": message,
+        "data": data?.toJson(),
+    };
+}
+
+class Data {
+    User? user;
+
+    Data({
+        this.user,
+    });
+
+    factory Data.fromJson(Map<String, dynamic> json) => Data(
+        user: json["user"] == null ? null : User.fromJson(json["user"]),
+    );
+
+    Map<String, dynamic> toJson() => {
+        "user": user?.toJson(),
+    };
+}
+
+class User {
+    String? id;
+    String? name;
+    String? email;
+    String? phone;
+    bool? isVerified;
+
+    User({
+        this.id,
+        this.name,
+        this.email,
+        this.phone,
+        this.isVerified,
+    });
+
+    factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json["id"],
+        name: json["name"],
+        email: json["email"],
+        phone: json["phone"],
+        isVerified: json["isVerified"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "isVerified": isVerified,
+    };
+}
