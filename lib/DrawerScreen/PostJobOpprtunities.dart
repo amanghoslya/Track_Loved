@@ -1,14 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:track_loved/CustomScreen/CustomScreen.dart';
-import 'package:track_loved/DrawerScreen/AddNetworkScreen/AddNetWorkScreen.dart';
-import 'package:track_loved/DrawerScreen/ExpandYourBusiness.dart';
-import 'package:track_loved/DrawerScreen/ExploreBusinessScreen.dart';
-import 'package:track_loved/DrawerScreen/Feedback_And_Google_Rating.dart';
-import 'package:track_loved/DrawerScreen/NetworkLocationpermissions.dart';
-import 'package:track_loved/DrawerScreen/NetworkRequestScreen/NetworkingRequest.dart';
-import 'package:track_loved/DrawerScreen/SearchLovedOnseScreen.dart';
-import 'package:track_loved/HomeScreen/DashboardScreen.dart';
-
 
 class PostJobOpportunitiesScreen extends StatefulWidget {
   const PostJobOpportunitiesScreen({super.key});
@@ -57,11 +49,26 @@ class _PostJobOpportunitiesScreenState
       showDialog(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: Text(_isHindi ? 'सफलता!' : 'Job Posted Successfully!'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.r),
+          ),
+          title: Text(
+            _isHindi ? 'सफलता!' : 'Job Posted Successfully!',
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
           content: Text(
             _isHindi
                 ? 'आपका नौकरी का अवसर लाइव कर दिया गया है।'
                 : 'Your job opportunity listing has been posted. Local applicants can now view and apply.',
+            style: TextStyle(
+              fontSize: 13.5.sp,
+              color: Colors.black87,
+              height: 1.4,
+            ),
           ),
           actions: [
             TextButton(
@@ -72,9 +79,13 @@ class _PostJobOpportunitiesScreenState
                   '/business-opportunities',
                 );
               },
-              child: const Text(
+              child: Text(
                 'Back to Home',
-                style: TextStyle(color: Color(0xFF0B4F4A)),
+                style: TextStyle(
+                  color: const Color(0xFF0B4F4A),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp,
+                ),
               ),
             ),
           ],
@@ -86,7 +97,7 @@ class _PostJobOpportunitiesScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF002E29),
+      backgroundColor: const Color(0xFF002E29),
       key: _scaffoldKey,
       drawer: AppDrawer(isHindi: _isHindi),
       appBar: AppBarScreen(
@@ -99,15 +110,13 @@ class _PostJobOpportunitiesScreenState
             _isHindi = value;
           });
         },
-        onNotificationPressed: () {
-          
-        },
+        onNotificationPressed: () {},
       ),
       body: SafeArea(
         child: Center(
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 600),
-            padding: const EdgeInsets.all(20.0),
+            constraints: BoxConstraints(maxWidth: 600.w),
+            padding: EdgeInsets.all(20.0.r),
             child: SingleChildScrollView(
               child: Form(
                 key: _formKey,
@@ -115,115 +124,125 @@ class _PostJobOpportunitiesScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(12.r),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE0F2F1),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(10.r),
                         border: Border.all(
                           color: const Color(0xFF0B4F4A).withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.card_membership,
-                            color: Color(0xFF0B4F4A),
+                            color: const Color(0xFF0B4F4A),
+                            size: 22.sp,
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10.w),
                           Expanded(
                             child: Text(
                               _isHindi
                                   ? 'यह एक सशुल्क सदस्यता सुविधा है, जो सीमित समय के लिए पूरी तरह से निःशुल्क उपलब्ध है।'
                                   : 'Paid Subscription Feature — Currently Available FREE for a Limited Period!',
-                              style: const TextStyle(
-                                fontSize: 12.5,
+                              style: TextStyle(
+                                fontSize: 12.5.sp,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF0B4F4A),
+                                color: const Color(0xFF0B4F4A),
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    const Text(
+                    SizedBox(height: 16.h),
+                    Text(
                       'Create a Job Listing',
                       style: TextStyle(
-                        fontSize: 22,
+                        fontSize: 22.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    const Text(
+                    SizedBox(height: 6.h),
+                    Text(
                       'Post job openings to connect with qualified professionals in your network area.',
-                      style: TextStyle(fontSize: 13, color: Colors.white),
+                      style: TextStyle(fontSize: 13.sp, color: Colors.white70),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     _buildTextField(
                       controller: _jobTitleController,
                       label: 'Job Title / Designation *',
                       hint:
                           'e.g., Senior Operations Manager / Delivery Executive',
                       validatorMsg: 'Please enter a job title',
+                      icon: Icons.work_outline,
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     _buildTextField(
                       controller: _employerController,
                       label: 'Company / Employer Name *',
                       hint: 'e.g., SwiftLogistics Express',
                       validatorMsg: 'Please enter company name',
+                      icon: Icons.business,
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     DropdownButtonFormField<String>(
                       initialValue: _selectedJobType,
-
+                      dropdownColor: const Color(0xFF141A19),
+                      style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                      iconEnabledColor: Colors.white,
                       decoration: InputDecoration(
                         labelText: 'Employment Type *',
-                        labelStyle: const TextStyle(
+                        labelStyle: TextStyle(
                           color: Colors.white60,
-                          fontSize: 14,
+                          fontSize: 13.5.sp,
                         ),
-
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        prefixIcon: Icon(
+                          Icons.badge_outlined,
+                          color: Colors.white60,
+                          size: 22.sp,
+                        ),
+                        filled: true,
+                        fillColor: Colors.white.withValues(alpha: 0.05),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 14.h,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.r),
                           borderSide: const BorderSide(color: Colors.white24),
                         ),
-
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12.r),
+                          borderSide: const BorderSide(color: Colors.white24),
+                        ),
                         focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(12.r),
                           borderSide: const BorderSide(
                             color: Color(0xFFC5A038),
                           ),
                         ),
                       ),
-
-                      dropdownColor: const Color(0xFF141A19),
-
-                      style: const TextStyle(color: Colors.white, fontSize: 14),
-
-                      iconEnabledColor: Colors.white,
-
                       items: _jobTypes.map((String type) {
                         return DropdownMenuItem<String>(
                           value: type,
                           child: Text(
                             type,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
-                              fontSize: 14,
+                              fontSize: 14.sp,
                             ),
                           ),
                         );
                       }).toList(),
-
                       onChanged: (val) {
                         if (val != null) {
                           setState(() => _selectedJobType = val);
                         }
                       },
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     Row(
                       children: [
                         Expanded(
@@ -232,59 +251,63 @@ class _PostJobOpportunitiesScreenState
                             label: 'Job Location *',
                             hint: 'e.g., Faridabad / Remote',
                             validatorMsg: 'Enter location',
+                            icon: Icons.location_on_outlined,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Expanded(
                           child: _buildTextField(
                             controller: _salaryController,
                             label: 'Salary / Compensation *',
                             hint: 'e.g., ₹25,000 - ₹40,000 / month',
                             validatorMsg: 'Enter compensation details',
+                            icon: Icons.currency_rupee,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     _buildTextField(
                       controller: _descriptionController,
                       label: 'Job Description & Requirements *',
                       hint:
                           'Outline key responsibilities, shift timing, and skills required...',
                       validatorMsg: 'Please provide description',
+                      icon: Icons.description_outlined,
                       maxLines: 4,
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     _buildTextField(
                       controller: _contactEmailController,
                       label: 'Application Email or Phone *',
                       hint: 'hr@company.com or +91 98765 43210',
                       validatorMsg: 'Enter contact channel',
+                      icon: Icons.contact_mail_outlined,
                       keyboardType: TextInputType.emailAddress,
                     ),
-                    const SizedBox(height: 30),
+                    SizedBox(height: 30.h),
                     SizedBox(
                       width: double.infinity,
-                      height: 50,
+                      height: 50.h,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF0B4F4A),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
+                            borderRadius: BorderRadius.circular(25.r),
                           ),
                         ),
                         onPressed: _submitJob,
-                        child: const Text(
+                        child: Text(
                           'Publish Job Listing',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 16.sp,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                   ],
                 ),
               ),
@@ -300,29 +323,53 @@ class _PostJobOpportunitiesScreenState
     required String label,
     required String hint,
     required String validatorMsg,
+    IconData? icon,
     int maxLines = 1,
     TextInputType keyboardType = TextInputType.text,
   }) {
-    return TextField(
+    return TextFormField(
       controller: controller,
-      style: const TextStyle(color: Colors.white),
+      maxLines: maxLines,
+      keyboardType: keyboardType,
+      style: TextStyle(color: Colors.white, fontSize: 14.sp),
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return validatorMsg;
+        }
+        return null;
+      },
       decoration: InputDecoration(
-        labelText: hint,
-        labelStyle: const TextStyle(color: Colors.white60),
-        prefixIcon: const Icon(Icons.email_outlined, color: Colors.white60),
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.white60, fontSize: 13.5.sp),
+        hintText: hint,
+        hintStyle: TextStyle(fontSize: 13.sp, color: Colors.white60),
+        prefixIcon: Icon(
+          icon ?? Icons.work_outline,
+          color: Colors.white60,
+          size: 22.sp,
+        ),
         filled: true,
         fillColor: Colors.white.withValues(alpha: 0.05),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: Colors.white24),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: Colors.white24),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: Color(0xFFC5A038)),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: Colors.redAccent),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12.r),
+          borderSide: const BorderSide(color: Colors.redAccent),
         ),
       ),
     );

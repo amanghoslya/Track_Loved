@@ -159,14 +159,27 @@ class ForgotPasswordOtpVerifyScreenState
                 ),
                 const SizedBox(height: 8),
 
-                Text(
-                  'We have sent a 6-digit verification code to your registered email address.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.7),
-                    fontSize: 14,
-                    height: 1.4,
+                Text.rich(
+                  TextSpan(
+                    text: 'We have sent a 6-digit verification code to\n',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.7),
+                      fontSize: 14,
+                      height: 1.4,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: widget.email.isNotEmpty
+                            ? widget.email
+                            : 'your registered email address',
+                        style: const TextStyle(
+                          color: accentGold,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
 
@@ -259,23 +272,24 @@ class ForgotPasswordOtpVerifyScreenState
                                 isLoading = true;
                               });
                               final service = ref.read(authServiceProvider);
-                              final response = await service.forgetPasswordOtpData(
-                                email: widget.email,
-                                otp: otp
-                              );
+                              final response = await service
+                                  .forgetPasswordOtpData(
+                                    email: widget.email,
+                                    otp: otp,
+                                  );
                               if (response.success == true) {
                                 showSuccessSnackBar(
                                   response.message ?? "Success",
                                 );
                                 if (context.mounted) {
                                   Navigator.pushAndRemoveUntil(
-                                          context,
-                                          CupertinoPageRoute(
-                                            builder: (context) =>
-                                                ResetPasswordScreen()
-                                          ),
-                                          (route) => false,
-                                        );
+                                    context,
+                                    CupertinoPageRoute(
+                                      builder: (context) =>
+                                          ResetPasswordScreen(),
+                                    ),
+                                    (route) => false,
+                                  );
                                 } else {
                                   setState(() {
                                     otp = "";

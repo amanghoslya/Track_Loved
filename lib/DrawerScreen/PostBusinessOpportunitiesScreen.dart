@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:track_loved/CustomScreen/CustomScreen.dart';
-import 'package:track_loved/HomeScreen/DashboardScreen.dart';
 
 class PostBusinessOpportunitiesScreen extends StatefulWidget {
   const PostBusinessOpportunitiesScreen({super.key});
@@ -27,8 +26,8 @@ class PostBusinessOpportunitiesScreenState
   final TextEditingController _contactController = TextEditingController();
   bool _isHindi = false;
 
-  String _selectedJobType = 'Full-Time';
-  String _selectedLevel = 'Mid-Level';
+  String? _selectedJobType;
+  String? _selectedLevel;
 
   final List<String> _jobTypes = [
     'Full-Time',
@@ -40,7 +39,7 @@ class PostBusinessOpportunitiesScreenState
 
   final List<String> _jobLevels = ['Frontline', 'Mid-Level', 'Senior'];
 
-  final List<String> _selectedPincodes = ['121001', '121003'];
+  final List<String> _selectedPincodes = [];
 
   @override
   void dispose() {
@@ -125,65 +124,42 @@ class PostBusinessOpportunitiesScreenState
         },
         onNotificationPressed: () {},
       ),
-      // appBar: AppBar(
-      //   backgroundColor: const Color(0xFF0B4F4A),
-      //   elevation: 0,
-      //   leading: IconButton(
-      //     icon: const Icon(Icons.menu, color: Colors.white),
-      //     onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-      //   ),
-      //   title: const Text(
-      //     'Post Job Opportunity',
-      //     style: TextStyle(
-      //       color: Colors.white,
-      //       fontWeight: FontWeight.bold,
-      //       fontSize: 16,
-      //     ),
-      //   ),
-      // ),
+
       body: Center(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 10),
+          padding: EdgeInsets.symmetric(horizontal: 14.w),
           child: SingleChildScrollView(
             child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 10),
-                  const Text(
+                  SizedBox(height: 10.h),
+                  Text(
                     'Create Job Listing',
                     style: TextStyle(
-                      fontSize: 22,
+                      fontSize: 22.sp,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
-
-                  const SizedBox(height: 6),
-
-                  const Text(
+                  SizedBox(height: 6.h),
+                  Text(
                     'Define compensation, levels, and specific target areas.',
-                    style: TextStyle(fontSize: 13, color: Colors.white),
+                    style: TextStyle(fontSize: 13.sp, color: Colors.white70),
                   ),
-
-                  const SizedBox(height: 20),
-
+                  SizedBox(height: 20.h),
                   _sectionHeader('1. Role & Seniority Level'),
-
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10.h),
 
                   // Job Title
                   _buildTextField(
                     controller: _jobTitleController,
                     label: 'Job Title / Designation *',
-                    hint: 'e.g., Senior Operations Manager',
                     validatorMsg: 'Enter job title',
                     icon: Icons.work_outline,
                   ),
-
-                  const SizedBox(height: 12),
-
+                  SizedBox(height: 16.h),
                   DropdownButtonFormField<String>(
                     initialValue: _selectedJobType,
                     decoration: _inputDecoration(
@@ -196,8 +172,8 @@ class PostBusinessOpportunitiesScreenState
                         value: t,
                         child: Text(
                           t,
-                          style: const TextStyle(
-                            fontSize: 11,
+                          style: TextStyle(
+                            fontSize: 13.sp,
                             color: Colors.white,
                           ),
                         ),
@@ -211,12 +187,10 @@ class PostBusinessOpportunitiesScreenState
                       }
                     },
                   ),
-
-                  const SizedBox(width: 10),
-                  SizedBox(height: 10),
+                  SizedBox(height: 16.h),
                   DropdownButtonFormField<String>(
                     initialValue: _selectedLevel,
-                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                    style: TextStyle(color: Colors.white, fontSize: 13.sp),
                     decoration: _inputDecoration(
                       'Hierarchy Level *',
                       icon: Icons.leaderboard_outlined,
@@ -227,9 +201,9 @@ class PostBusinessOpportunitiesScreenState
                         value: l,
                         child: Text(
                           l,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Colors.white,
-                            fontSize: 13,
+                            fontSize: 13.sp,
                           ),
                         ),
                       );
@@ -242,23 +216,17 @@ class PostBusinessOpportunitiesScreenState
                       }
                     },
                   ),
-
-                  SizedBox(height: 20),
-
+                  SizedBox(height: 20.h),
                   _sectionHeader('2. Location & Target Pin Codes'),
-
-                  const SizedBox(height: 10),
-
+                  SizedBox(height: 10.h),
                   // Location
                   _buildTextField(
                     controller: _locationController,
                     label: 'Base City / Location *',
-                    hint: 'e.g., Faridabad, Haryana',
                     validatorMsg: 'Enter location',
                     icon: Icons.location_on_outlined,
                   ),
-
-                  const SizedBox(height: 12),
+                  SizedBox(height: 16.h),
 
                   Row(
                     children: [
@@ -266,48 +234,46 @@ class PostBusinessOpportunitiesScreenState
                         child: _buildTextField(
                           controller: _pincodeInputController,
                           label: 'Add Target Pin Code',
-                          hint: 'Enter 6-digit pin',
                           validatorMsg: 'Enter pin code',
                           keyboardType: TextInputType.number,
                           icon: Icons.pin_drop_outlined,
                         ),
                       ),
-
-                      const SizedBox(width: 10),
-
+                      SizedBox(width: 10.w),
                       SizedBox(
-                        height: 50,
+                        height: 50.h,
                         child: ElevatedButton.icon(
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF0B4F4A),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(12.r),
                             ),
                           ),
                           onPressed: _addPinCode,
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.add,
                             color: Colors.white,
-                            size: 16,
+                            size: 16.sp,
                           ),
-                          label: const Text(
+                          label: Text(
                             'Add Pin',
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 13.sp,
+                            ),
                           ),
                         ),
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 6),
-
+                  SizedBox(height: 6.h),
                   Wrap(
-                    spacing: 8,
+                    spacing: 8.w,
                     children: _selectedPincodes.map((pin) {
                       return Chip(
-                        label: Text(pin, style: const TextStyle(fontSize: 12)),
+                        label: Text(pin, style: TextStyle(fontSize: 12.sp)),
                         backgroundColor: const Color(0xFFE0F2F1),
-                        deleteIcon: const Icon(Icons.close, size: 14),
+                        deleteIcon: Icon(Icons.close, size: 14.sp),
                         onDeleted: () {
                           setState(() {
                             _selectedPincodes.remove(pin);
@@ -316,102 +282,125 @@ class PostBusinessOpportunitiesScreenState
                       );
                     }).toList(),
                   ),
-
-                  const SizedBox(height: 20),
-
+                  SizedBox(height: 20.h),
                   _sectionHeader('3. Annual CTC, Perks & Reimbursements'),
-
-                  const SizedBox(height: 10),
-
+                  SizedBox(height: 10.h),
                   // Annual CTC
                   _buildTextField(
                     controller: _annualCtcController,
                     label: 'Annual CTC Package *',
-                    hint: 'e.g., ₹6,00,000 - ₹8,50,000 / annum',
                     validatorMsg: 'Enter CTC details',
                     icon: Icons.currency_rupee,
                   ),
-
-                  const SizedBox(height: 12),
-
+                  SizedBox(height: 16.h),
                   Row(
                     children: [
                       Expanded(
                         child: _buildTextField(
                           controller: _perksController,
                           label: 'Perks & Benefits',
-                          hint: 'e.g., Health Insurance, Performance Bonus',
                           validatorMsg: 'Enter perks',
                           icon: Icons.card_giftcard_outlined,
                         ),
                       ),
-
-                      const SizedBox(width: 12),
-
+                      SizedBox(width: 12.w),
                       Expanded(
                         child: _buildTextField(
                           controller: _reimbursementsController,
                           label: 'Reimbursements',
-                          hint: 'e.g., Fuel, Mobile & Travel Allowance',
                           validatorMsg: 'Enter reimbursements',
                           icon: Icons.receipt_long_outlined,
                         ),
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 20),
-
+                  SizedBox(height: 20.h),
                   _sectionHeader('4. Responsibilities & Application Details'),
-
-                  const SizedBox(height: 10),
-
-                  // Description
-                  _buildTextField(
+                  SizedBox(height: 10.h),
+                  TextFormField(
                     controller: _descriptionController,
-                    label: 'Job Description & Requirements *',
-                    hint: 'Outline day-to-day role responsibilities...',
-                    validatorMsg: 'Enter job description',
-                    maxLines: 4,
-                    icon: Icons.description_outlined,
+                    maxLines: 3,
+                    keyboardType: TextInputType.text,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    textAlign: TextAlign.justify,
+                    decoration: InputDecoration(
+                      alignLabelWithHint: true,
+                      isDense: true,
+                      labelText: 'Job Description & Requirements *',
+                      labelStyle: TextStyle(
+                        color: Colors.white60,
+                        fontSize: 15.5.sp,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white.withValues(alpha: 0.05),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 14.h,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14.r),
+                        borderSide: const BorderSide(color: Colors.white24),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14.r),
+                        borderSide: const BorderSide(color: Colors.white24),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14.r),
+                        borderSide: const BorderSide(color: Color(0xFFC5A038)),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14.r),
+                        borderSide: const BorderSide(color: Colors.redAccent),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14.r),
+                        borderSide: const BorderSide(color: Colors.redAccent),
+                      ),
+                    ),
+                    // validator: (value) {
+                    //   if (value == null || value.trim().isEmpty) {
+                    //     return 'Enter job description';
+                    //   }
+                    //   return null;
+                    // },
                   ),
-
-                  const SizedBox(height: 12),
-
+                  SizedBox(height: 16.h),
                   // Contact
                   _buildTextField(
                     controller: _contactController,
                     label: 'Application Contact (Email / Phone) *',
-                    hint: 'careers@company.com or +91 9876543210',
                     validatorMsg: 'Enter application contact',
                     icon: Icons.contact_phone_outlined,
                   ),
-
-                  const SizedBox(height: 30),
-
+                  SizedBox(height: 30.h),
                   SizedBox(
                     width: double.infinity,
-                    height: 50,
+                    height: 50.h,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0B4F4A),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(25.r),
                         ),
                       ),
                       onPressed: _submitJob,
-                      child: const Text(
+                      child: Text(
                         'Publish Job Listing',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
+                          fontSize: 16.sp,
                         ),
                       ),
                     ),
                   ),
-
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                 ],
               ),
             ),
@@ -428,8 +417,8 @@ class PostBusinessOpportunitiesScreenState
   Widget _sectionHeader(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 15,
+      style: TextStyle(
+        fontSize: 15.sp,
         fontWeight: FontWeight.bold,
         color: Colors.white,
       ),
@@ -443,7 +432,6 @@ class PostBusinessOpportunitiesScreenState
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
-    required String hint,
     required String validatorMsg,
     required IconData icon,
     int maxLines = 1,
@@ -453,22 +441,39 @@ class PostBusinessOpportunitiesScreenState
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(
+        color: Colors.white,
+        fontSize: 18.sp,
+        fontWeight: FontWeight.w500,
+      ),
+      autovalidateMode: AutovalidateMode.onUserInteraction,
       decoration: InputDecoration(
+        isDense: true,
         labelText: label,
-        hintText: hint,
-        labelStyle: const TextStyle(color: Colors.white60),
-        hintStyle: const TextStyle(color: Colors.white60, fontSize: 13),
-        prefixIcon: Icon(icon, color: Colors.white60),
+        labelStyle: TextStyle(color: Colors.white60, fontSize: 15.5.sp),
+        prefixIcon: Icon(icon, color: Colors.white60, size: 24.sp),
         filled: true,
         fillColor: Colors.white.withValues(alpha: 0.05),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14.r),
+          borderSide: const BorderSide(color: Colors.white24),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14.r),
           borderSide: const BorderSide(color: Colors.white24),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14.r),
           borderSide: const BorderSide(color: Color(0xFFC5A038)),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14.r),
+          borderSide: const BorderSide(color: Colors.redAccent),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14.r),
+          borderSide: const BorderSide(color: Colors.redAccent),
         ),
       ),
       validator: (value) {
@@ -492,21 +497,24 @@ class PostBusinessOpportunitiesScreenState
     return InputDecoration(
       labelText: label,
       hintText: hint,
-
-      labelStyle: const TextStyle(color: Colors.white60),
-
-      hintStyle: const TextStyle(color: Colors.white60, fontSize: 13),
-
-      prefixIcon: icon != null ? Icon(icon, color: Colors.white60) : null,
-
+      labelStyle: TextStyle(color: Colors.white60, fontSize: 13.5.sp),
+      hintStyle: TextStyle(color: Colors.white60, fontSize: 13.sp),
+      prefixIcon: icon != null
+          ? Icon(icon, color: Colors.white60, size: 22.sp)
+          : null,
       filled: true,
       fillColor: Colors.white.withValues(alpha: 0.05),
+      contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
+        borderSide: const BorderSide(color: Colors.white24),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12.r),
         borderSide: const BorderSide(color: Colors.white24),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         borderSide: const BorderSide(color: Color(0xFFC5A038)),
       ),
     );

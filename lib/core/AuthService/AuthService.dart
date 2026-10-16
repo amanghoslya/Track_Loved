@@ -1,10 +1,12 @@
-import 'package:retrofit/retrofit.dart';
+import 'dart:io';
+
 import 'package:track_loved/core/Data/BodyModel/ForgetPasswordOtpBodyModel.dart';
 import 'package:track_loved/core/Data/BodyModel/ForgotPasswordBodyModel.dart';
 import 'package:track_loved/core/Data/BodyModel/LoginBodyModel.dart';
 import 'package:track_loved/core/Data/BodyModel/OtpVerifyBodyModel.dart';
 import 'package:track_loved/core/Data/BodyModel/RegisterBodyModel.dart';
 import 'package:track_loved/core/Data/BodyModel/ResetPasswordBodyModel.dart';
+import 'package:track_loved/core/Data/BodyModel/locationSharingBodyModel.dart';
 import 'package:track_loved/core/Data/ResponseModel/AddNetworkSearchResModel.dart';
 import 'package:track_loved/core/Data/ResponseModel/ForgetPasswordResMode.dart';
 import 'package:track_loved/core/Data/ResponseModel/ForgotPasswordOtpResModel.dart';
@@ -13,7 +15,19 @@ import 'package:track_loved/core/Data/ResponseModel/NetworkRequestResModel.dart'
 import 'package:track_loved/core/Data/ResponseModel/OtpVerifyResModel.dart';
 import 'package:track_loved/core/Data/ResponseModel/RegisterResModel.dart';
 import 'package:track_loved/core/Data/ResponseModel/ResetPasswordResModel.dart';
+import 'package:track_loved/core/Data/ResponseModel/LocationSharingReceivedResModel.dart';
 import 'package:track_loved/core/Network/ApiStateNetwork.dart';
+
+import '../Data/BodyModel/MatchContactsBodyModel.dart';
+import '../Data/BodyModel/UpdateProfileBodyModel.dart';
+import '../Data/ResponseModel/MatchContactsResModel.dart';
+import '../Data/ResponseModel/acceptResModel.dart';
+import '../Data/ResponseModel/getMyProfileModel.dart';
+import '../Data/ResponseModel/rejectResModel.dart';
+import '../Data/ResponseModel/sendReqeustResModel.dart';
+import '../Data/ResponseModel/trackFriendModel.dart';
+import '../Data/ResponseModel/updateProfileResModel.dart';
+import '../Data/ResponseModel/uploadImageResModel.dart';
 
 class Authservice {
   final ApiStateNetwork api;
@@ -34,6 +48,7 @@ class Authservice {
     required password,
     required name,
     required phone,
+    String role = "user",
   }) async {
     try {
       final body = RegisterBodyModel(
@@ -41,6 +56,7 @@ class Authservice {
         password: password,
         name: name,
         phone: phone,
+        role: role,
       );
       final response = await api.register(body);
       return response;
@@ -113,6 +129,135 @@ class Authservice {
   Future<NetworkRequestResModel> getNetworkRequestData() async {
     try {
       final response = await api.getNetworkRequest();
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<UploadImageResModel> uploadImage(File? file) async {
+    try {
+      final response = await api.uploadImage(file);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<GetMyProfileModel> getMyProfileData() async {
+    try {
+      final response = await api.getMyProfile();
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<UpdateProfileResModel> updateUserProfileData(
+    UpdateProfileBodyModel body,
+  ) async {
+    try {
+      final response = await api.updateUserProfile(body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<MatchContactsResModel> matchContactsData(
+    MatchContactsBodyModel body,
+  ) async {
+    try {
+      final response = await api.matchContacts(body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<MatchContactsResModel> getMatchContactsData() async {
+    try {
+      final response = await api.getMatchContacts();
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<SendRequest> sendRequest({required String id}) async {
+    try {
+      final response = await api.sendRequest(id);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<RejectResModel> rejectRequest({required String id}) async {
+    try {
+      final response = await api.rejectRequest(id);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<AcceptResModel> acceptRequest({required String id}) async {
+    try {
+      final response = await api.acceptRequest(id);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<TrackFriendModel> trackFriend({
+    String? search,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    try {
+      final response = await api.trackFriend(search, page, limit);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<dynamic> getLocation({required String id}) async {
+    try {
+      final response = await api.getLocation(id);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<dynamic> locationSharing({
+    required String id,
+    required bool value,
+  }) async {
+    try {
+      final body = LocationSharingBodyModel(enabled: value);
+      final response = await api.locationSharing(id, body);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<LocationSharingReceivedResModel> getLocationSharingReceived() async {
+    try {
+      final response = await api.getLocationSharingReceived();
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<dynamic> getLawContent() async {
+    try {
+      final response = await api.getLawContent();
       return response;
     } catch (e) {
       rethrow;

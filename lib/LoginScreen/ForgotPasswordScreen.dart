@@ -174,39 +174,41 @@ class _ForgotPassWordScreenState extends ConsumerState<ForgotPassWordScreen> {
                               return;
                             }
                             try {
-                                  setState(() {
-                                    _isLoading = true;
-                                  });
-                                  final service = ref.read(authServiceProvider);
-                                  final response = await service.forgetPasswordData(
-                                    email: _emailController.text.trim(),
+                              setState(() {
+                                _isLoading = true;
+                              });
+                              final service = ref.read(authServiceProvider);
+                              final response = await service.forgetPasswordData(
+                                email: _emailController.text.trim(),
+                              );
+                              if (response.success == true) {
+                                if (response.success == true) {
+                                  showSuccessSnackBar(
+                                    response.message ?? "Sucess",
                                   );
-                                  if (response.success == true) {
-                                    if (response.success == true) {
-                                      showSuccessSnackBar(
-                                        response.message ?? "Sucess",
-                                      );
-                                      if (context.mounted) {
-                                        Navigator.pushAndRemoveUntil(
-                                          context,
-                                          CupertinoPageRoute(
-                                            builder: (context) =>
-                                                ForgotPasswordOtpVerifyScreen(email: _emailController.text.trim())
-                                          ),
-                                          (route) => false,
-                                        );
-                                      }
-                                    }
-                                  }
-                                } catch (e) {
-                                  log(e.toString());
-                                } finally {
-                                  if (mounted) {
-                                    setState(() {
-                                      _isLoading = false;
-                                    });
+                                  if (context.mounted) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            ForgotPasswordOtpVerifyScreen(
+                                              email: _emailController.text
+                                                  .trim(),
+                                            ),
+                                      ),
+                                    );
                                   }
                                 }
+                              }
+                            } catch (e) {
+                              log(e.toString());
+                            } finally {
+                              if (mounted) {
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              }
+                            }
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: accentGoldColor,

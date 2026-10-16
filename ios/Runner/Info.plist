@@ -45,5 +45,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSContactsUsageDescription</key>
+	<string>Track Loved requires contact access to find and connect with your friends.</string>
 </dict>
 </plist>

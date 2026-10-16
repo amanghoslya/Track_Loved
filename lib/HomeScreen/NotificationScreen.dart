@@ -1,12 +1,10 @@
-
 import 'package:flutter/material.dart';
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key, required bool isHindi});
 
   @override
-  State<NotificationScreen> createState() =>
-      _NotificationScreenState();
+  State<NotificationScreen> createState() => _NotificationScreenState();
 }
 
 class _NotificationScreenState extends State<NotificationScreen> {
@@ -62,10 +60,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
         elevation: 0,
         title: const Text(
           'Notifications',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
         centerTitle: false,
         actions: [
@@ -111,8 +106,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 : ListView.separated(
                     padding: const EdgeInsets.all(16),
                     itemCount: filteredNotifications.length,
-                    separatorBuilder: (_, __) =>
-                        const SizedBox(height: 12),
+                    separatorBuilder: (_, __) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final item = filteredNotifications[index];
                       return _buildNotificationCard(item);
@@ -134,17 +128,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
         });
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-          vertical: 10,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected ? primaryColor : Colors.white,
           borderRadius: BorderRadius.circular(22),
           border: Border.all(
-            color: isSelected
-                ? primaryColor
-                : const Color(0xFFE0E5E3),
+            color: isSelected ? primaryColor : const Color(0xFFE0E5E3),
           ),
         ),
         child: Text(
@@ -172,14 +161,10 @@ class _NotificationScreenState extends State<NotificationScreen> {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: isUnread
-              ? const Color(0xFFEFF7F5)
-              : Colors.white,
+          color: isUnread ? const Color(0xFFEFF7F5) : Colors.white,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isUnread
-                ? const Color(0xFFD0E7E1)
-                : const Color(0xFFE8ECEA),
+            color: isUnread ? const Color(0xFFD0E7E1) : const Color(0xFFE8ECEA),
           ),
         ),
         child: Row(
@@ -275,10 +260,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           const SizedBox(height: 6),
           const Text(
             'You are all caught up!',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.black54,
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.black54),
           ),
         ],
       ),

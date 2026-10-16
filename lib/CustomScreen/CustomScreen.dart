@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:track_loved/DrawerScreen/AddNetworkScreen/AddNetWorkScreen.dart';
-import 'package:track_loved/DrawerScreen/ExpandYourBusiness.dart';
 import 'package:track_loved/DrawerScreen/ExploreBusinessScreen.dart';
 import 'package:track_loved/DrawerScreen/Feedback_And_Google_Rating.dart';
 import 'package:track_loved/DrawerScreen/KnowYourLawScreen.dart';
@@ -18,42 +19,90 @@ class AppDrawer extends StatelessWidget {
   final bool isHindi;
   const AppDrawer({super.key, required this.isHindi});
 
+  Widget _buildDrawerItem({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      dense: true,
+      leading: Icon(icon, color: const Color(0xFF0B4F4A), size: 24.sp),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 16.5.sp,
+          fontWeight: FontWeight.w600,
+          color: const Color(0xFF1E293B),
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final box = Hive.box('userdata');
+    final name = box.get('name');
+    final email = box.get('email');
+
     return Drawer(
+      width: 320.w,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           UserAccountsDrawerHeader(
-            decoration: const BoxDecoration(color: Color(0xFF0B4F4A)),
-            accountName: const Text(
-              'Ramesh Sharma',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xFF0F3D38), Color(0xFF0B4F4A)],
+              ),
             ),
-            accountEmail: const Text('ramesh.sharma@example.com'),
-            currentAccountPicture: const CircleAvatar(
+            margin: EdgeInsets.zero,
+            accountName: Text(
+              name ?? "N/A",
+              style: GoogleFonts.outfit(
+                fontWeight: FontWeight.bold,
+                fontSize: 20.sp,
+                color: Colors.white,
+              ),
+            ),
+            accountEmail: Text(
+              email ?? "N/A",
+              style: GoogleFonts.outfit(
+                fontSize: 14.5.sp,
+                color: Colors.white70,
+              ),
+            ),
+            currentAccountPicture: CircleAvatar(
+              radius: 32.r,
               backgroundColor: Colors.white,
               child: Text(
-                'RS',
-                style: TextStyle(
-                  color: Color(0xFF0B4F4A),
+                (name != null && name.toString().trim().isNotEmpty)
+                    ? name.toString().trim()[0].toUpperCase()
+                    : "N/A",
+                style: GoogleFonts.outfit(
+                  color: const Color(0xFF0B4F4A),
                   fontWeight: FontWeight.bold,
+                  fontSize: 22.sp,
                 ),
               ),
             ),
           ),
 
-          ListTile(
-            leading: const Icon(Icons.dashboard, color: Color(0xFF0B4F4A)),
-            title: const Text('Dashboard'),
+          SizedBox(height: 8.h),
+
+          _buildDrawerItem(
+            icon: Icons.dashboard,
+            title: isHindi ? 'डैशबोर्ड' : 'Dashboard',
             onTap: () {
               Navigator.pop(context);
             },
           ),
 
-          ListTile(
-            leading: const Icon(Icons.person_add, color: Color(0xFF0B4F4A)),
-            title: const Text('Add Network'),
+          _buildDrawerItem(
+            icon: Icons.person_add,
+            title: isHindi ? 'नेटवर्क जोड़ें' : 'Add Network',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -65,9 +114,11 @@ class AppDrawer extends StatelessWidget {
             },
           ),
 
-          ListTile(
-            leading: const Icon(Icons.location_pin, color: Color(0xFF0B4F4A)),
-            title: const Text('Network Location Permissions'),
+          _buildDrawerItem(
+            icon: Icons.location_pin,
+            title: isHindi
+                ? 'नेटवर्क स्थान अनुमतियाँ'
+                : 'Network Location Permissions',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -79,9 +130,9 @@ class AppDrawer extends StatelessWidget {
             },
           ),
 
-          ListTile(
-            leading: const Icon(Icons.people_alt, color: Color(0xFF0B4F4A)),
-            title: const Text('Networking Requests'),
+          _buildDrawerItem(
+            icon: Icons.people_alt,
+            title: isHindi ? 'नेटवर्किंग अनुरोध' : 'Networking Requests',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -93,9 +144,9 @@ class AppDrawer extends StatelessWidget {
             },
           ),
 
-          ListTile(
-            leading: const Icon(Icons.favorite, color: Color(0xFF0B4F4A)),
-            title: const Text('Track Loved Ones'),
+          _buildDrawerItem(
+            icon: Icons.favorite,
+            title: isHindi ? 'प्रियजनों को ट्रैक करें' : 'Track Loved Ones',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -107,12 +158,11 @@ class AppDrawer extends StatelessWidget {
             },
           ),
 
-          ListTile(
-            leading: const Icon(
-              Icons.business_center,
-              color: Color(0xFF0B4F4A),
-            ),
-            title: const Text('Explore Business Opportunities'),
+          _buildDrawerItem(
+            icon: Icons.business_center,
+            title: isHindi
+                ? 'व्यापार के अवसर खोजें'
+                : 'Explore Business Opportunities',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -124,9 +174,11 @@ class AppDrawer extends StatelessWidget {
             },
           ),
 
-          ListTile(
-            leading: const Icon(Icons.add_business, color: Color(0xFF0B4F4A)),
-            title: const Text('Post Business Opportunities'),
+          _buildDrawerItem(
+            icon: Icons.add_business,
+            title: isHindi
+                ? 'व्यापार के अवसर पोस्ट करें'
+                : 'Post Business Opportunities',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -138,21 +190,9 @@ class AppDrawer extends StatelessWidget {
             },
           ),
 
-          ListTile(
-            leading: const Icon(Icons.work, color: Color(0xFF0B4F4A)),
-            title: const Text('Expand Your Business'),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                CupertinoPageRoute(builder: (context) => ExpandYourBusiness()),
-              );
-            },
-          ),
-
-          ListTile(
-            leading: const Icon(Icons.gavel, color: Color(0xFF0B4F4A)),
-            title: const Text('Know Your Law'),
+          _buildDrawerItem(
+            icon: Icons.gavel,
+            title: isHindi ? 'कानून जानें' : 'Know Your Law',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -161,9 +201,12 @@ class AppDrawer extends StatelessWidget {
               );
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.post_add, color: Color(0xFF0B4F4A)),
-            title: const Text('Post Job Opportunities'),
+
+          _buildDrawerItem(
+            icon: Icons.post_add,
+            title: isHindi
+                ? 'नौकरी के अवसर पोस्ट करें'
+                : 'Post Job Opportunities',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -175,9 +218,9 @@ class AppDrawer extends StatelessWidget {
             },
           ),
 
-          ListTile(
-            leading: const Icon(Icons.feedback, color: Color(0xFF0B4F4A)),
-            title: const Text('Google Feedback'),
+          _buildDrawerItem(
+            icon: Icons.feedback,
+            title: isHindi ? 'गूगल फीडबैक' : 'Google Feedback',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(
@@ -187,46 +230,65 @@ class AppDrawer extends StatelessWidget {
             },
           ),
 
-          const Divider(),
+          Divider(height: 16.h, thickness: 1.h, color: const Color(0xFFE2E8F0)),
 
-          ListTile(
-            leading: const Icon(Icons.settings, color: Color(0xFF0B4F4A)),
-            title: const Text('Settings'),
+          _buildDrawerItem(
+            icon: Icons.settings,
+            title: isHindi ? 'सेटिंग्स' : 'Settings',
             onTap: () {
               Navigator.pop(context);
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.logout, color: Color(0xFF0B4F4A)),
-            title: const Text('Logout'),
+
+          _buildDrawerItem(
+            icon: Icons.logout,
+            title: isHindi ? 'लॉग आउट' : 'Logout',
             onTap: () {
               showDialog(
                 context: context,
                 builder: (dialogContext) {
                   return AlertDialog(
-                    title: const Text(
-                      'Sign Out',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16.r),
                     ),
-                    content: const Text('Are you sure you want to sign out?'),
+                    title: Text(
+                      isHindi ? 'साइन आउट' : 'Sign Out',
+                      style: GoogleFonts.outfit(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 19.sp,
+                      ),
+                    ),
+                    content: Text(
+                      isHindi
+                          ? 'क्या आप वाकई साइन आउट करना चाहते हैं?'
+                          : 'Are you sure you want to sign out?',
+                      style: GoogleFonts.outfit(
+                        fontSize: 16.sp,
+                        color: Colors.black87,
+                      ),
+                    ),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.pop(dialogContext);
                         },
-                        child: const Text(
-                          'No',
-                          style: TextStyle(color: Colors.grey),
+                        child: Text(
+                          isHindi ? 'नहीं' : 'No',
+                          style: GoogleFonts.outfit(
+                            fontSize: 15.sp,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                       TextButton(
                         onPressed: () async {
                           Navigator.pop(dialogContext);
 
-                          if (!context.mounted) return;
                           var box = Hive.box("userdata");
                           await box.clear();
 
+                          if (!context.mounted) return;
                           Navigator.pushAndRemoveUntil(
                             context,
                             CupertinoPageRoute(
@@ -235,11 +297,12 @@ class AppDrawer extends StatelessWidget {
                             (route) => false,
                           );
                         },
-                        child: const Text(
-                          'Yes',
-                          style: TextStyle(
+                        child: Text(
+                          isHindi ? 'हाँ' : 'Yes',
+                          style: GoogleFonts.outfit(
                             color: Colors.red,
                             fontWeight: FontWeight.bold,
+                            fontSize: 15.sp,
                           ),
                         ),
                       ),
@@ -249,6 +312,7 @@ class AppDrawer extends StatelessWidget {
               );
             },
           ),
+          SizedBox(height: 16.h),
         ],
       ),
     );
@@ -277,7 +341,7 @@ class AppBarScreen extends StatefulWidget implements PreferredSizeWidget {
   State<AppBarScreen> createState() => _AppBarScreenState();
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => Size.fromHeight(56.h);
 }
 
 class _AppBarScreenState extends State<AppBarScreen> {
@@ -285,69 +349,83 @@ class _AppBarScreenState extends State<AppBarScreen> {
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: const Color(0xFF0B4F4A),
-
       elevation: 0,
-      centerTitle: false, // Title ko start (left) align karne ke liye
-      titleSpacing: 0, // Icon aur Title ke beech extra gap khatam karne ke liye
+      centerTitle: false,
+      titleSpacing: 0,
+      toolbarHeight: 56.h,
       leading: IconButton(
-        icon: const Icon(Icons.menu, color: Colors.white),
+        icon: Icon(Icons.menu, color: Colors.white, size: 24.sp),
         onPressed: () {
           Scaffold.of(context).openDrawer();
         },
       ),
       title: Text(
         widget.isHindi ? widget.titleHi : widget.titleEn,
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          fontSize: 19.sp,
         ),
       ),
-
       actions: [
         Container(
-          margin: const EdgeInsets.symmetric(vertical: 8),
+          margin: EdgeInsets.symmetric(vertical: 11.h),
           decoration: BoxDecoration(
             color: Colors.white.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(15),
+            borderRadius: BorderRadius.circular(16.r),
           ),
           child: ToggleButtons(
-            constraints: const BoxConstraints(minHeight: 28, minWidth: 45),
-            borderRadius: BorderRadius.circular(15),
+            constraints: BoxConstraints(minHeight: 28.h, minWidth: 42.w),
+            borderRadius: BorderRadius.circular(16.r),
             selectedColor: Colors.white,
             fillColor: const Color(0xFF1565C0),
-            color: Colors.white60,
+            color: Colors.white70,
             isSelected: [!widget.isHindi, widget.isHindi],
             onPressed: (int index) {
               widget.onLanguageChanged(index == 1);
             },
-            children: const [
+            children: [
               Text(
                 'En',
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                style: GoogleFonts.outfit(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               Text(
                 'हिं',
-                style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                style: GoogleFonts.outfit(
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
         ),
-        const SizedBox(width: 4),
+        SizedBox(width: 4.w),
 
         // Notification Badge Icon
         IconButton(
-          icon: const Icon(Icons.notifications_none, color: Colors.white),
+          icon: Icon(
+            Icons.notifications_none,
+            color: Colors.white,
+            size: 24.sp,
+          ),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    NotificationScreen(isHindi: widget.isHindi),
-              ),
-            );
+            if (widget.onNotificationPressed != null) {
+              widget.onNotificationPressed!();
+            } else {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      NotificationScreen(isHindi: widget.isHindi),
+                ),
+              );
+            }
           },
         ),
+        SizedBox(width: 4.w),
       ],
     );
   }

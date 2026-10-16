@@ -33,17 +33,21 @@ class OtpVerifyResModel {
 }
 
 class Data {
+    String? token;
     User? user;
 
     Data({
+        this.token,
         this.user,
     });
 
     factory Data.fromJson(Map<String, dynamic> json) => Data(
+        token: json["token"],
         user: json["user"] == null ? null : User.fromJson(json["user"]),
     );
 
     Map<String, dynamic> toJson() => {
+        "token": token,
         "user": user?.toJson(),
     };
 }
@@ -53,14 +57,18 @@ class User {
     String? name;
     String? email;
     String? phone;
+    String? role;
     bool? isVerified;
+    bool? isProfileComplete;
 
     User({
         this.id,
         this.name,
         this.email,
         this.phone,
+        this.role,
         this.isVerified,
+        this.isProfileComplete,
     });
 
     factory User.fromJson(Map<String, dynamic> json) => User(
@@ -68,7 +76,9 @@ class User {
         name: json["name"],
         email: json["email"],
         phone: json["phone"],
+        role: json["role"],
         isVerified: json["isVerified"],
+        isProfileComplete: json["isProfileComplete"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -76,6 +86,8 @@ class User {
         "name": name,
         "email": email,
         "phone": phone,
+        "role": role,
         "isVerified": isVerified,
+        "isProfileComplete": isProfileComplete,
     };
 }

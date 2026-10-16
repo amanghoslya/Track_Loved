@@ -1,13 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:track_loved/CustomScreen/CustomScreen.dart';
-import 'package:track_loved/DrawerScreen/AddNetworkScreen/AddNetWorkScreen.dart';
-import 'package:track_loved/DrawerScreen/ExploreBusinessScreen.dart';
-import 'package:track_loved/DrawerScreen/NetworkLocationpermissions.dart'
-    hide AppDrawer;
 import 'package:track_loved/DrawerScreen/NetworkRequestScreen/Provider/NetworkRequestProvider.dart';
 import 'package:track_loved/DrawerScreen/SearchLovedOnseScreen.dart';
-import 'package:track_loved/HomeScreen/DashboardScreen.dart';
+import 'package:track_loved/core/AuthService/AuthServiceProvider.dart';
+import 'package:track_loved/core/Utils/showMessage.dart';
 
 class NetworkingRequestScreen extends ConsumerStatefulWidget {
   const NetworkingRequestScreen({super.key});
@@ -21,103 +21,84 @@ class NetworkingRequestScreenState
     extends ConsumerState<NetworkingRequestScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isHindi = false;
+  final Set<String> _acceptingIds = {};
+  final Set<String> _rejectingIds = {};
 
-  final List<Member> _members = [
-    Member(
-      id: '1',
-      nameEn: 'Vikram Singh',
-      nameHi: 'विक्रम सिंह',
-      roleEn: 'Backend Developer',
-      roleHi: 'बैकएंड डेवलपर',
-      currentAddress: 'Sector 62, Noida, UP - 201301',
-      permanentAddress: 'Sector 16, Faridabad, HR - 121002',
-      initials: 'VS',
-      status: ConnectionStatus.pendingReceived,
-    ),
-    Member(
-      id: '2',
-      nameEn: 'Neha Gupta',
-      nameHi: 'नेहा गुप्ता',
-      roleEn: 'UI/UX Designer',
-      roleHi: 'यूआई/यूएक्स डिजाइनर',
-      currentAddress: 'HSR Layout, Bengaluru, KA - 560102',
-      permanentAddress: 'Sainipura, Faridabad, HR - 121001',
-      initials: 'NG',
-      status: ConnectionStatus.pendingReceived,
-    ),
-    Member(
-      id: '3',
-      nameEn: 'Ramesh Sharma',
-      nameHi: 'रमेश शर्मा',
-      roleEn: 'Senior Software Engineer',
-      roleHi: 'सीनियर सॉफ्टवेयर इंजीनियर',
-      currentAddress: 'Indiranagar, Bengaluru, KA - 560038',
-      permanentAddress: 'Sainipura, Faridabad, HR - 121001',
-      initials: 'RS',
-      status: ConnectionStatus.none,
-    ),
-    Member(
-      id: '4',
-      nameEn: 'Amit Kumar',
-      nameHi: 'अमित कुमार',
-      roleEn: 'Product Manager',
-      roleHi: 'उत्पाद प्रबंधक',
-      currentAddress: 'Whitefield, Bengaluru, KA - 560066',
-      permanentAddress: 'Sector 21, Faridabad, HR - 121001',
-      initials: 'AK',
-      status: ConnectionStatus.pendingSent,
-    ),
-  ];
-
-  int get _pendingRequestsCount => _members
-      .where((m) => m.status == ConnectionStatus.pendingReceived)
-      .length;
-
-  void _acceptRequest(Member member) {
+  Future<void> _handleAccept(String id) async {
     setState(() {
-      member.status = ConnectionStatus.connected;
+      _acceptingIds.add(id);
     });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
+    try {
+      final service = ref.read(authServiceProvider);
+      final res = await service.acceptRequest(id: id);
+      if (res.success == true) {
+        ref.invalidate(networkRequestProvider);
+        showSuccessSnackBar(
           _isHindi
-              ? 'अब आप ${member.nameHi} से जुड़े हैं'
-              : 'You are now connected with ${member.nameEn}',
-        ),
-        backgroundColor: const Color(0xFF2E7D32),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+              ? 'अनुरोध स्वीकार कर लिया गया'
+              : 'Request accepted successfully',
+        );
+        if (mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SearchLovedOnesScreen(),
+            ),
+          );
+        }
+      } else if (res.message != null && res.message!.isNotEmpty) {
+        showErrorSnackBar(res.message!);
+      }
+    } catch (e) {
+      log(e.toString());
+      showErrorSnackBar(
+        _isHindi
+            ? 'अनुरोध स्वीकार करने में विफल रहा'
+            : 'Failed to accept request',
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _acceptingIds.remove(id);
+        });
+      }
+    }
   }
 
-  void _rejectRequest(Member member) {
+  Future<void> _handleReject(String id) async {
     setState(() {
-      member.status = ConnectionStatus.none;
+      _rejectingIds.add(id);
     });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          _isHindi
-              ? '${member.nameHi} का कनेक्शन अनुरोध अस्वीकार कर दिया गया'
-              : 'Connection request from ${member.nameEn} rejected',
-        ),
-        backgroundColor: const Color(0xFFD32F2F),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    try {
+      final service = ref.read(authServiceProvider);
+      final res = await service.rejectRequest(id: id);
+      if (res.success == true) {
+        ref.invalidate(networkRequestProvider);
+        showSuccessSnackBar(
+          _isHindi ? 'अनुरोध अस्वीकार कर दिया गया' : 'Request rejected',
+        );
+      } else if (res.message != null && res.message!.isNotEmpty) {
+        showErrorSnackBar(res.message!);
+      }
+    } catch (e) {
+      log(e.toString());
+      showErrorSnackBar(
+        _isHindi
+            ? 'अनुरोध अस्वीकार करने में विफल रहा'
+            : 'Failed to reject request',
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _rejectingIds.remove(id);
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final networkRequest = ref.watch(networkRequestProvider);
-    final incomingRequests = _members
-        .where((m) => m.status == ConnectionStatus.pendingReceived)
-        .toList();
-    final otherMembers = _members
-        .where((m) => m.status != ConnectionStatus.pendingReceived)
-        .toList();
 
     return Scaffold(
       drawer: AppDrawer(isHindi: _isHindi),
@@ -134,95 +115,184 @@ class NetworkingRequestScreenState
           });
         },
       ),
-      body: networkRequest.when(
-        data: (data) {
-          return SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 12.0,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (incomingRequests.isNotEmpty) ...[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _isHindi ? 'आने वाले अनुरोध' : 'Incoming Requests',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF0B4F4A),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          '${incomingRequests.length}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: incomingRequests.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      return _buildIncomingRequestCard(incomingRequests[index]);
-                    },
+
+      body: RefreshIndicator(
+        color: Colors.white,
+        backgroundColor: const Color(0xFF0B4F4A),
+        displacement: 50.h,
+        onRefresh: () async {
+          ref.invalidate(networkRequestProvider);
+          await ref.read(networkRequestProvider.future);
+        },
+        child: networkRequest.when(
+          data: (data) {
+            final requests = data.data?.requests ?? [];
+
+            if (requests.isEmpty) {
+              return ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.65,
+                    child: _buildEmptyState(),
                   ),
                 ],
-              ],
-            ),
-          );
-        },
-        error: (error, stackTrace) {
-          return Center(
-            child: Text(
-              _isHindi ? 'डेटा लोड करने में त्रुटि आई' : 'Error loading data',
-              style: const TextStyle(color: Colors.white),
-            ),
-          );
-        },
-        loading: () {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 12),
-              const Expanded(
-                child: Center(
-                  child: CircularProgressIndicator(color: Colors.white),
+              );
+            }
+
+            return ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      _isHindi ? 'आने वाले अनुरोध' : 'Incoming Requests',
+                      style: TextStyle(
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 8.w,
+                        vertical: 2.h,
+                      ),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0B4F4A),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Text(
+                        '${requests.length}',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          );
-        },
+                SizedBox(height: 12.h),
+
+                ...requests.map((item) {
+                  final requestId = item.id ?? '';
+                  final isAccepting = _acceptingIds.contains(requestId);
+                  final isRejecting = _rejectingIds.contains(requestId);
+
+                  return Padding(
+                    padding: EdgeInsets.only(bottom: 12.h),
+                    child: _buildIncomingRequestCard(
+                      name: item.senderId?.name ?? '',
+                      city: item.senderId?.city ?? '',
+                      state: item.senderId?.state ?? '',
+                      country: item.senderId?.country ?? '',
+                      id: requestId,
+                      isAccepting: isAccepting,
+                      isRejecting: isRejecting,
+                      currentAddress: item.senderId?.currentAddress ?? '',
+                      pin: item.senderId?.pincode ?? "",
+                    ),
+                  );
+                }),
+              ],
+            );
+          },
+          error: (error, stackTrace) {
+            return ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.65,
+                  child: Center(
+                    child: Text(
+                      _isHindi
+                          ? 'डेटा लोड करने में त्रुटि आई'
+                          : 'Error loading data',
+                      style: TextStyle(color: Colors.white, fontSize: 14.sp),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+          loading: () {
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            );
+          },
+        ),
       ),
     );
   }
 
-  Widget _buildIncomingRequestCard(Member member) {
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 30.h),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 86.w,
+              height: 86.w,
+              decoration: BoxDecoration(
+                color: const Color(0xFF0B4F4A).withValues(alpha: 0.5),
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFF136862), width: 1.5),
+              ),
+              child: Icon(
+                Icons.people_outline_rounded,
+                size: 44.sp,
+                color: Colors.white70,
+              ),
+            ),
+            SizedBox(height: 20.h),
+            Text(
+              _isHindi ? 'कोई अनुरोध नहीं है' : 'No Connection Requests',
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              _isHindi
+                  ? 'वर्तमान में आपके पास कोई नया कनेक्शन अनुरोध लंबित नहीं है।'
+                  : 'You currently have no pending connection requests.',
+              style: TextStyle(
+                fontSize: 13.5.sp,
+                color: Colors.white70,
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIncomingRequestCard({
+    required String name,
+    required String city,
+    required String state,
+    required String country,
+    required String id,
+    required bool isAccepting,
+    required bool isRejecting,
+    required String currentAddress,
+    required String pin,
+  }) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: const Color(0xFFDCDFE4)),
       ),
       child: Column(
@@ -231,34 +301,28 @@ class NetworkingRequestScreenState
           Row(
             children: [
               CircleAvatar(
-                radius: 22,
+                radius: 22.r,
                 backgroundColor: const Color(0xFF0B4F4A),
                 child: Text(
-                  member.initials,
-                  style: const TextStyle(
+                  name.isNotEmpty ? name[0].toUpperCase() : '?',
+                  style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
+                    fontSize: 14.sp,
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _isHindi ? member.nameHi : member.nameEn,
-                      style: const TextStyle(
-                        fontSize: 16,
+                      name,
+                      style: TextStyle(
+                        fontSize: 16.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
-                      ),
-                    ),
-                    Text(
-                      _isHindi ? member.roleHi : member.roleEn,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black54,
                       ),
                     ),
                   ],
@@ -266,57 +330,92 @@ class NetworkingRequestScreenState
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(Icons.location_on, color: Colors.redAccent, size: 16),
-              const SizedBox(width: 6),
+              Icon(Icons.location_on, color: Colors.redAccent, size: 16.sp),
+              SizedBox(width: 6.w),
               Expanded(
                 child: Text(
-                  '${_isHindi ? 'वर्तमान: ' : 'Current: '}${member.currentAddress}',
-                  style: const TextStyle(fontSize: 12, color: Colors.black87),
+                  "$currentAddress $city $state $country $pin",
+                  style: TextStyle(fontSize: 12.sp, color: Colors.black87),
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           Row(
             children: [
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () => _acceptRequest(member),
-                  icon: const Icon(Icons.check, size: 16, color: Colors.white),
-                  label: Text(
-                    _isHindi ? 'स्वीकार करें' : 'Accept',
-                    style: const TextStyle(color: Colors.white),
-                  ),
+                  onPressed: isAccepting || isRejecting
+                      ? null
+                      : () => _handleAccept(id),
+                  icon: isAccepting
+                      ? const SizedBox.shrink()
+                      : Icon(Icons.check, size: 16.sp, color: Colors.white),
+                  label: isAccepting
+                      ? SizedBox(
+                          width: 16.w,
+                          height: 16.w,
+                          child: const CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          _isHindi ? 'स्वीकार करें' : 'Accept',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13.5.sp,
+                          ),
+                        ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF2E7D32),
+                    disabledBackgroundColor: const Color(
+                      0xFF2E7D32,
+                    ).withValues(alpha: 0.6),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10.r),
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: 10.w),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () => _rejectRequest(member),
-                  icon: const Icon(
-                    Icons.close,
-                    size: 16,
-                    color: Color(0xFFD32F2F),
-                  ),
-                  label: Text(
-                    _isHindi ? 'अस्वीकार करें' : 'Reject',
-                    style: const TextStyle(color: Color(0xFFD32F2F)),
-                  ),
+                  onPressed: isAccepting || isRejecting
+                      ? null
+                      : () => _handleReject(id),
+                  icon: isRejecting
+                      ? const SizedBox.shrink()
+                      : Icon(
+                          Icons.close,
+                          size: 16.sp,
+                          color: const Color(0xFFD32F2F),
+                        ),
+                  label: isRejecting
+                      ? SizedBox(
+                          width: 16.w,
+                          height: 16.w,
+                          child: const CircularProgressIndicator(
+                            color: Color(0xFFD32F2F),
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text(
+                          _isHindi ? 'अस्वीकार करें' : 'Reject',
+                          style: TextStyle(
+                            color: const Color(0xFFD32F2F),
+                            fontSize: 13.5.sp,
+                          ),
+                        ),
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Color(0xFFD32F2F)),
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(10.r),
                     ),
                   ),
                 ),
@@ -328,136 +427,56 @@ class NetworkingRequestScreenState
     );
   }
 
-  Widget _buildMemberCard(Member member) {
+  // ignore: unused_element
+  Widget _buildMemberCard({
+    required String name,
+    required String city,
+    required String state,
+    required String country,
+  }) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(14.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         border: Border.all(color: const Color(0xFFDCDFE4)),
       ),
       child: Row(
         children: [
           CircleAvatar(
-            radius: 22,
+            radius: 22.r,
             backgroundColor: const Color(0xFF0B4F4A),
             child: Text(
-              member.initials,
-              style: const TextStyle(
+              name[0].toUpperCase(),
+              style: TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
+                fontSize: 14.sp,
               ),
             ),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  _isHindi ? member.nameHi : member.nameEn,
-                  style: const TextStyle(
-                    fontSize: 15,
+                  name,
+                  style: TextStyle(
+                    fontSize: 15.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
                 ),
                 Text(
-                  _isHindi ? member.roleHi : member.roleEn,
-                  style: const TextStyle(fontSize: 12, color: Colors.black54),
+                  "$city $state $country",
+                  style: TextStyle(fontSize: 12.sp, color: Colors.black54),
                 ),
               ],
             ),
           ),
-          _buildActionButton(member),
         ],
       ),
     );
   }
-
-  Widget _buildActionButton(Member member) {
-    switch (member.status) {
-      case ConnectionStatus.connected:
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: const Color(0xFFE8F5E9),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Text(
-            _isHindi ? 'जुड़े हुए' : 'Connected',
-            style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFF2E7D32),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        );
-
-      case ConnectionStatus.pendingSent:
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-          decoration: BoxDecoration(
-            color: const Color(0xFFEFF4FA),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFB0BEC5)),
-          ),
-          child: Text(
-            _isHindi ? '⏳ लंबित' : '⏳ Pending',
-            style: const TextStyle(
-              fontSize: 12,
-              color: Color(0xFF0B4F4A),
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        );
-
-      case ConnectionStatus.none:
-      default:
-        return ElevatedButton(
-          onPressed: () {
-            setState(() {
-              member.status = ConnectionStatus.pendingSent;
-            });
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF0B4F4A),
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-          child: Text(
-            _isHindi ? '+ जोड़ें' : '+ Connect',
-            style: const TextStyle(color: Colors.white, fontSize: 12),
-          ),
-        );
-    }
-  }
-}
-
-enum ConnectionStatus { none, pendingSent, pendingReceived, connected }
-
-class Member {
-  final String id;
-  final String nameEn;
-  final String nameHi;
-  final String roleEn;
-  final String roleHi;
-  final String currentAddress;
-  final String permanentAddress;
-  final String initials;
-  ConnectionStatus status;
-
-  Member({
-    required this.id,
-    required this.nameEn,
-    required this.nameHi,
-    required this.roleEn,
-    required this.roleHi,
-    required this.currentAddress,
-    required this.permanentAddress,
-    required this.initials,
-    this.status = ConnectionStatus.none,
-  });
 }

@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:pinput/pinput.dart';
-import 'package:track_loved/LoginScreen/LoginScreen.dart';
+import 'package:track_loved/LoginScreen/registerConsentScreen.dart';
 import 'package:track_loved/core/AuthService/AuthServiceProvider.dart';
 import 'package:track_loved/core/Utils/showMessage.dart';
 
@@ -18,7 +19,6 @@ class OtpVerifyScreen extends ConsumerStatefulWidget {
 }
 
 class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
-  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _otpController = TextEditingController();
 
   String otp = '';
@@ -35,12 +35,17 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
   }
 
   void _startTimer() {
+    if (!mounted) return;
     setState(() {
       _secondsRemaining = 60;
       _canResend = false;
     });
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
       if (_secondsRemaining > 0) {
         setState(() {
           _secondsRemaining--;
@@ -49,22 +54,20 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
         setState(() {
           _canResend = true;
         });
-        _timer?.cancel();
+        timer.cancel();
       }
     });
   }
 
   @override
   void dispose() {
-    _emailController.dispose();
-    _otpController.dispose();
     _timer?.cancel();
+    _otpController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Custom theme variables keeping original colors
     const primaryDark = Color(0xFF0F3D38);
     const accentGold = Color(0xFFC5A038);
 
@@ -95,14 +98,12 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
         ],
       ),
     );
-
     final submittedPinTheme = defaultPinTheme.copyWith(
       decoration: defaultPinTheme.decoration!.copyWith(
         color: Colors.white.withValues(alpha: 0.12),
         border: Border.all(color: accentGold.withValues(alpha: 0.6)),
       ),
     );
-
     return Scaffold(
       backgroundColor: primaryDark,
       appBar: AppBar(
@@ -157,14 +158,27 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
                 ),
                 const SizedBox(height: 8),
 
-                Text(
-                  'We have sent a 6-digit verification code to your registered email address.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white.withValues(alpha: 0.7),
-                    fontSize: 14,
-                    height: 1.4,
+                Text.rich(
+                  TextSpan(
+                    text: 'We have sent a 6-digit verification code to\n',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.7),
+                      fontSize: 14,
+                      height: 1.4,
+                    ),
+                    children: [
+                      TextSpan(
+                        text: widget.email.isNotEmpty
+                            ? widget.email
+                            : 'your registered email address',
+                        style: const TextStyle(
+                          color: accentGold,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
 
@@ -219,20 +233,50 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
                     ),
                     _canResend
                         ? GestureDetector(
-                            onTap: () {
-                              _startTimer();
-                              debugPrint('Resending OTP...');
+                            onTap: () async {
+                              try {
+                                setState(() {
+                                  isResending = false;
+                                });
+                                final service = ref.read(authServiceProvider);
+                                final response = await service
+                                    .forgetPasswordData(email: widget.email);
+                                if (response.success == true) {
+                                  if (response.success == true) {
+                                    _startTimer();
+                                    showSuccessSnackBar(
+                                      "OTP Resent Sucessfully",
+                                    );
+                                  }
+                                }
+                              } catch (e) {
+                                log(e.toString());
+                              } finally {
+                                if (mounted) {
+                                  setState(() {
+                                    isResending = false;
+                                  });
+                                }
+                              }
                             },
-                            child: const Text(
-                              'Resend Code',
-                              style: TextStyle(
-                                color: accentGold,
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                decoration: TextDecoration.underline,
-                                decorationColor: accentGold,
-                              ),
-                            ),
+                            child: isResending
+                                ? SizedBox(
+                                    width: 15.w,
+                                    height: 15.h,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 1,
+                                    ),
+                                  )
+                                : Text(
+                                    'Resend Code',
+                                    style: TextStyle(
+                                      color: accentGold,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: accentGold,
+                                    ),
+                                  ),
                           )
                         : Text(
                             'Resend in 00:${_secondsRemaining.toString().padLeft(2, '0')}',
@@ -251,50 +295,77 @@ class _OtpVerifyScreenState extends ConsumerState<OtpVerifyScreen> {
                   width: double.infinity,
                   height: 54,
                   child: ElevatedButton(
-                    onPressed: isLoading
-                        ? null
-                        : () async {
-                            try {
-                              setState(() {
-                                isLoading = true;
-                              });
-                              final service = ref.read(authServiceProvider);
-                              final response = await service.otpData(
-                                email: widget.email,
-                                otp: otp,
-                              );
-                              if (response.success == true) {
-                                showSuccessSnackBar(
-                                  response.message ?? "Success",
-                                );
-                                if (context.mounted) {
-                                  Navigator.push(
-                                    context,
-                                    CupertinoPageRoute(
-                                      builder: (context) => LoginScreen(),
-                                    ),
-                                  );
-                                } else {
-                                  setState(() {
-                                    otp = "";
-                                    _otpController.clear();
-                                  });
-                                }
-                              }
-                            } catch (e) {
-                              log(e.toString());
-                              setState(() {
-                                otp = "";
-                                _otpController.clear();
-                              });
-                            } finally {
-                              if (mounted) {
-                                setState(() {
-                                  isLoading = false;
-                                });
-                              }
-                            }
-                          },
+                    onPressed: () async {
+                      if (otp.length < 6) {
+                        showErrorSnackBar(
+                          "Please enter the complete 6-digit OTP",
+                        );
+                        return;
+                      }
+                      bool isNavigating = false;
+                      try {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        final service = ref.read(authServiceProvider);
+                        final response = await service.otpData(
+                          email: widget.email,
+                          otp: otp,
+                        );
+                        if (response.success == true) {
+                          showSuccessSnackBar(response.message ?? "Success");
+                          var box = Hive.box("userdata");
+                          if (response.data?.token != null) {
+                            await box.put("token", response.data!.token);
+                          }
+                          if (response.data?.user?.id != null) {
+                            await box.put("id", response.data!.user!.id);
+                          }
+                          if (response.data?.user?.name != null) {
+                            await box.put("name", response.data!.user!.name);
+                          }
+                          await box.put(
+                            "isProfileComplete",
+                            response.data?.user?.isProfileComplete,
+                          );
+                          await box.put("email", response.data?.user?.email);
+
+                          if (context.mounted) {
+                            isNavigating = true;
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const RegistrationConsentScreen(),
+                              ),
+                              (route) => false,
+                            );
+                            return;
+                          }
+                        } else {
+                          if (mounted) {
+                            setState(() {
+                              otp = "";
+                              _otpController.clear();
+                            });
+                          }
+                        }
+                      } catch (e) {
+                        log(e.toString());
+                        if (mounted) {
+                          setState(() {
+                            otp = "";
+                            _otpController.clear();
+                          });
+                        }
+                      } finally {
+                        if (mounted && !isNavigating) {
+                          setState(() {
+                            isLoading = false;
+                          });
+                        }
+                      }
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: accentGold,
                       foregroundColor: Colors.white,

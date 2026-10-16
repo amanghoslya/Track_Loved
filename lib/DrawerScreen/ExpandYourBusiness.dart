@@ -1,14 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:track_loved/CustomScreen/CustomScreen.dart';
-import 'package:track_loved/DrawerScreen/AddNetworkScreen/AddNetWorkScreen.dart';
-import 'package:track_loved/DrawerScreen/Feedback_And_Google_Rating.dart';
-import 'package:track_loved/DrawerScreen/NetworkLocationpermissions.dart'
-    hide AppDrawer;
-import 'package:track_loved/DrawerScreen/NetworkRequestScreen/NetworkingRequest.dart' hide AppDrawer;
-import 'package:track_loved/DrawerScreen/PostJobOpprtunities.dart'
-    hide AppDrawer;
-import 'package:track_loved/DrawerScreen/SearchLovedOnseScreen.dart';
-import 'package:track_loved/HomeScreen/DashboardScreen.dart';
 
 class ExpandYourBusiness extends StatefulWidget {
   const ExpandYourBusiness({super.key});
@@ -68,11 +60,26 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
       showDialog(
         context: context,
         builder: (dialogContext) => AlertDialog(
-          title: Text(_isHindi ? 'सफलता!' : 'Opportunity Published!'),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.r),
+          ),
+          title: Text(
+            _isHindi ? 'सफलता!' : 'Opportunity Published!',
+            style: TextStyle(
+              fontSize: 18.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
           content: Text(
             _isHindi
                 ? 'आपका व्यवसाय विस्तार अवसर सफलतापूर्वक लाइव कर दिया गया है।'
                 : 'Your business expansion listing has been successfully posted. Interested partners in your specified pin codes can now reach out.',
+            style: TextStyle(
+              fontSize: 13.5.sp,
+              color: Colors.black87,
+              height: 1.4,
+            ),
           ),
           actions: [
             TextButton(
@@ -83,9 +90,13 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
                   '/business-opportunities',
                 );
               },
-              child: const Text(
+              child: Text(
                 'View Listings',
-                style: TextStyle(color: Color(0xFF0B4F4A)),
+                style: TextStyle(
+                  color: const Color(0xFF0B4F4A),
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14.sp,
+                ),
               ),
             ),
           ],
@@ -97,7 +108,7 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF002E29),
+      backgroundColor: const Color(0xFF002E29),
       key: _scaffoldKey,
       drawer: AppDrawer(isHindi: _isHindi),
       appBar: AppBarScreen(
@@ -111,27 +122,11 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
           });
         },
       ),
-      // appBar: AppBar(
-      //   backgroundColor: const Color(0xFF0B4F4A),
-      //   elevation: 0,
-      //   leading: IconButton(
-      //     icon: const Icon(Icons.menu, color: Colors.white),
-      //     onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-      //   ),
-      //   title: Text(
-      //     _isHindi ? 'अपना व्यवसाय बढ़ाएं' : 'Expand Your Business',
-      //     style: const TextStyle(
-      //       color: Colors.white,
-      //       fontWeight: FontWeight.bold,
-      //       fontSize: 16,
-      //     ),
-      //   ),
-      // ),
       body: SafeArea(
         child: Center(
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 600),
-            padding: const EdgeInsets.all(20.0),
+            constraints: BoxConstraints(maxWidth: 600.w),
+            padding: EdgeInsets.all(20.0.r),
             child: SingleChildScrollView(
               child: Form(
                 key: _formKey,
@@ -139,53 +134,54 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: EdgeInsets.all(12.r),
                       decoration: BoxDecoration(
                         color: const Color(0xFFE0F2F1),
-                        borderRadius: BorderRadius.circular(10),
+                        borderRadius: BorderRadius.circular(10.r),
                         border: Border.all(
                           color: const Color(0xFF0B4F4A).withValues(alpha: 0.3),
                         ),
                       ),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.card_membership,
-                            color: Color(0xFF0B4F4A),
+                            color: const Color(0xFF0B4F4A),
+                            size: 22.sp,
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10.w),
                           Expanded(
                             child: Text(
                               _isHindi
                                   ? 'यह एक सशुल्क सदस्यता सुविधा है, जो सीमित समय के लिए पूरी तरह से निःशुल्क उपलब्ध है।'
                                   : 'Paid Subscription Feature — Currently Available FREE for a Limited Period!',
-                              style: const TextStyle(
-                                fontSize: 12.5,
+                              style: TextStyle(
+                                fontSize: 12.5.sp,
                                 fontWeight: FontWeight.bold,
-                                color: Color(0xFF0B4F4A),
+                                color: const Color(0xFF0B4F4A),
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    const Text(
+                    SizedBox(height: 16.h),
+                    Text(
                       'Publish an Expansion Opportunity',
                       style: TextStyle(
-                        fontSize: 22,
+                        fontSize: 22.sp,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    const Text(
+                    SizedBox(height: 6.h),
+                    Text(
                       'Invite verified distributors, partners, or franchisees for your business growth.',
-                      style: TextStyle(fontSize: 13, color: Colors.white),
+                      style: TextStyle(fontSize: 13.sp, color: Colors.white70),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     _buildSectionHeader('1. Company & Opportunity Type'),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     _buildTextField(
                       icon: Icons.business,
                       controller: _companyNameController,
@@ -193,32 +189,26 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
                       hint: 'e.g., SwiftLogistics Express / Apex Retail',
                       validatorMsg: 'Please enter your company name',
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     DropdownButtonFormField<String>(
                       initialValue: _selectedOpportunityType,
-
-                      style: const TextStyle(color: Colors.white, fontSize: 14),
-
+                      style: TextStyle(color: Colors.white, fontSize: 14.sp),
                       dropdownColor: const Color(0xFF141A19),
-
                       iconEnabledColor: Colors.white,
                       iconDisabledColor: Colors.white,
-
                       decoration: _inputDecoration('Opportunity Type *'),
-
                       items: _opportunityTypes.map((String type) {
                         return DropdownMenuItem<String>(
                           value: type,
                           child: Text(
                             type,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
-                              fontSize: 14,
+                              fontSize: 14.sp,
                             ),
                           ),
                         );
                       }).toList(),
-
                       onChanged: (val) {
                         if (val != null) {
                           setState(() {
@@ -227,7 +217,7 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
                         }
                       },
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     _buildTextField(
                       icon: Icons.title,
                       controller: _opportunityTitleController,
@@ -236,9 +226,9 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
                           'e.g., Looking for City Distributors for Fast Courier Service',
                       validatorMsg: 'Please enter a headline',
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     _buildSectionHeader('2. Target Location & Requirements'),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     Row(
                       children: [
                         Expanded(
@@ -251,7 +241,7 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
                             validatorMsg: 'Enter city',
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Expanded(
                           flex: 1,
                           child: _buildTextField(
@@ -265,7 +255,7 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     Row(
                       children: [
                         Expanded(
@@ -277,7 +267,7 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
                             validatorMsg: 'Enter investment range',
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Expanded(
                           child: _buildTextField(
                             icon: Icons.square_foot,
@@ -289,9 +279,9 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     _buildSectionHeader('3. Financial Returns & Proposition'),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     _buildTextField(
                       icon: Icons.trending_up,
                       controller: _returnsController,
@@ -299,7 +289,7 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
                       hint: 'e.g., 20-25% ROI or Payback within 6 Months',
                       validatorMsg: 'Please specify returns',
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     _buildTextField(
                       icon: Icons.description,
                       controller: _descriptionController,
@@ -309,9 +299,9 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
                       validatorMsg: 'Please provide description clarity',
                       maxLines: 4,
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                     _buildSectionHeader('4. Contact Information'),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     _buildTextField(
                       icon: Icons.person,
                       controller: _contactPersonController,
@@ -319,7 +309,7 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
                       hint: 'e.g., Rajesh Verma (Director)',
                       validatorMsg: 'Enter contact person name',
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     Row(
                       children: [
                         Expanded(
@@ -332,7 +322,7 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
                             keyboardType: TextInputType.phone,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Expanded(
                           child: _buildTextField(
                             controller: _emailController,
@@ -345,29 +335,29 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 30),
+                    SizedBox(height: 30.h),
                     SizedBox(
                       width: double.infinity,
-                      height: 50,
+                      height: 50.h,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF0B4F4A),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
+                            borderRadius: BorderRadius.circular(25.r),
                           ),
                         ),
                         onPressed: _submitOpportunity,
-                        child: const Text(
+                        child: Text(
                           'Publish Business Opportunity',
                           style: TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 16.sp,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    SizedBox(height: 20.h),
                   ],
                 ),
               ),
@@ -381,8 +371,8 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
   Widget _buildSectionHeader(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontSize: 15,
+      style: TextStyle(
+        fontSize: 15.sp,
         fontWeight: FontWeight.bold,
         color: Colors.white,
       ),
@@ -402,7 +392,7 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: Colors.white, fontSize: 14.sp),
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
           return validatorMsg;
@@ -412,29 +402,30 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        labelStyle: const TextStyle(color: Colors.white60),
-        hintStyle: const TextStyle(fontSize: 13, color: Colors.white60),
-        prefixIcon: Icon(icon, color: Colors.white60),
+        labelStyle: TextStyle(color: Colors.white60, fontSize: 13.5.sp),
+        hintStyle: TextStyle(fontSize: 13.sp, color: Colors.white60),
+        prefixIcon: Icon(icon, color: Colors.white60, size: 22.sp),
         filled: true,
         fillColor: Colors.white.withValues(alpha: 0.05),
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: Colors.white24),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: Colors.white24),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: Color(0xFFC5A038)),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: Colors.redAccent),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12.r),
           borderSide: const BorderSide(color: Colors.redAccent),
         ),
       ),
@@ -444,31 +435,27 @@ class ExpandYourBusinessState extends State<ExpandYourBusiness> {
   InputDecoration _inputDecoration(String label, {String? hint}) {
     return InputDecoration(
       labelText: label,
-
-      labelStyle: const TextStyle(color: Colors.white60),
-
+      labelStyle: TextStyle(color: Colors.white60, fontSize: 13.5.sp),
       hintText: hint,
-
-      hintStyle: const TextStyle(fontSize: 13, color: Colors.white60),
-
-      prefixIcon: const Icon(Icons.email_outlined, color: Colors.white60),
-
+      hintStyle: TextStyle(fontSize: 13.sp, color: Colors.white60),
+      prefixIcon: Icon(
+        Icons.email_outlined,
+        color: Colors.white60,
+        size: 22.sp,
+      ),
       filled: true,
-
       fillColor: Colors.white.withValues(alpha: 0.05),
-
+      contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         borderSide: const BorderSide(color: Colors.white24),
       ),
-
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         borderSide: const BorderSide(color: Colors.white24),
       ),
-
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(12.r),
         borderSide: const BorderSide(color: Color(0xFFC5A038)),
       ),
     );

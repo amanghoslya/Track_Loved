@@ -1,129 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:track_loved/CustomScreen/CustomScreen.dart';
-// class BottomNavigationBarScreen extends StatefulWidget {
-//   const BottomNavigationBarScreen({super.key});
-
-//   @override
-//   State<BottomNavigationBarScreen> createState() =>
-//       _BottomNavigationBarScreenState();
-// }
-
-// class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
-//   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-//   int selectedBottomIndex = 0;
-//   List<Widget> get pages => [
-//     DynamicDashboardScreen(),
-//     ProfileScreen(),
-//     Messagescreen(),
-//   ];
-//   @override
-//   Widget build(BuildContext context) {
-//     return WillPopScope(
-//       onWillPop: () async {
-//         if (selectedBottomIndex != 0) {
-//           setState(() {
-//             selectedBottomIndex = 0;
-//           });
-//           return false;
-//         }
-//         return true;
-//       },
-//       child: Scaffold(
-//         key: _scaffoldKey,
-
-//         // Drawer
-//         drawer: const AppDrawer(isHindi: false),
-//         body: pages[selectedBottomIndex],
-//         bottomNavigationBar: Container(
-//           width: double.infinity,
-//           height: 70,
-//           decoration: BoxDecoration(
-//             color: Colors.white,
-//             borderRadius: const BorderRadius.only(
-//               topLeft: Radius.circular(20),
-//               topRight: Radius.circular(20),
-//             ),
-//             boxShadow: [
-//               BoxShadow(
-//                 color: Colors.black.withValues(alpha: 0.10),
-//                 blurRadius: 10,
-//                 spreadRadius: 1,
-//                 offset: const Offset(0, -2),
-//               ),
-//             ],
-//           ),
-//           child: Row(
-//             children: [
-//               Expanded(
-//                 child: _bottomItem(index: 0, icon: Icons.home, title: 'Home'),
-//               ),
-//               Expanded(
-//                 child: _bottomItem(
-//                   index: 1,
-//                   icon: Icons.person_outline,
-//                   title: 'Profile',
-//                 ),
-//               ),
-//               Expanded(
-//                 child: _bottomItem(
-//                   index: 2,
-//                   icon: Icons.chat_bubble_outline,
-//                   title: 'Messages',
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget _bottomItem({
-//     required IconData icon,
-//     required String title,
-//     required int index,
-//   }) {
-//     final bool isSelected = selectedBottomIndex == index;
-
-//     return InkWell(
-//       onTap: () {
-//         setState(() {
-//           selectedBottomIndex = index;
-//         });
-//       },
-//       child: Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           Container(
-//             width: 52,
-//             height: 28,
-//             decoration: BoxDecoration(
-//               color: isSelected ? const Color(0xFFB9E3DE) : Colors.transparent,
-//               borderRadius: BorderRadius.circular(20),
-//             ),
-//             child: Icon(
-//               icon,
-//               size: 18,
-//               color: isSelected ? const Color(0xFF0B4F4A) : Colors.black54,
-//             ),
-//           ),
-
-//           const SizedBox(height: 2),
-
-//           Text(
-//             title,
-//             style: TextStyle(
-//               fontSize: 10,
-//               fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
-//               color: isSelected ? const Color(0xFF0B4F4A) : Colors.black54,
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
+import 'package:track_loved/LoginScreen/registerConsentScreen.dart';
+import 'package:track_loved/complanyProfile/companyProfileScreen.dart';
 
 class DynamicDashboardScreen extends StatefulWidget {
   const DynamicDashboardScreen({super.key});
@@ -132,8 +11,44 @@ class DynamicDashboardScreen extends StatefulWidget {
   State<DynamicDashboardScreen> createState() => _DynamicDashboardScreenState();
 }
 
-class _DynamicDashboardScreenState extends State<DynamicDashboardScreen> {
+class _DynamicDashboardScreenState extends State<DynamicDashboardScreen>
+    with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _checkPermissions();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _checkPermissions();
+    }
+  }
+
+  Future<void> _checkPermissions() async {
+    final locationGranted = await Permission.location.isGranted;
+    final contactsGranted = await Permission.contacts.isGranted;
+    if (!locationGranted || !contactsGranted) {
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const RegistrationConsentScreen(),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +124,21 @@ class _DynamicDashboardScreenState extends State<DynamicDashboardScreen> {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Icon(Icons.tune, color: Colors.white, size: 20),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CompanyProfileScreen(),
+                        ),
+                      );
+                    },
+                    child: const Icon(
+                      Icons.tune,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -225,7 +154,7 @@ class _DynamicDashboardScreenState extends State<DynamicDashboardScreen> {
                       // =====================================================
                       Expanded(
                         child: Container(
-                          height: 165,
+                          height: 175,
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -326,7 +255,7 @@ class _DynamicDashboardScreenState extends State<DynamicDashboardScreen> {
                       // =====================================================
                       Expanded(
                         child: Container(
-                          height: 165,
+                          height: 175,
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -403,7 +332,7 @@ class _DynamicDashboardScreenState extends State<DynamicDashboardScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 15),
                   Row(
                     children: [
                       // =====================================================
@@ -411,7 +340,7 @@ class _DynamicDashboardScreenState extends State<DynamicDashboardScreen> {
                       // =====================================================
                       Expanded(
                         child: Container(
-                          height: 165,
+                          height: 175,
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: Colors.white,
@@ -535,7 +464,7 @@ class _DynamicDashboardScreenState extends State<DynamicDashboardScreen> {
                       // =====================================================
                       Expanded(
                         child: Container(
-                          height: 165,
+                          height: 175,
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: Colors.white,

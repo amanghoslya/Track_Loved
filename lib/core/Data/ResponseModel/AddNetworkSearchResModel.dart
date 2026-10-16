@@ -105,6 +105,11 @@ class User {
     Location? location;
     String? relationshipStatus;
     String? pincode;
+    String? requestStatus;
+    String? campusLocation;
+    String? currentAddress;
+    String? permanentAddress;
+    String? graduationYear;
 
     User({
         this.id,
@@ -123,6 +128,11 @@ class User {
         this.location,
         this.relationshipStatus,
         this.pincode,
+        this.requestStatus,
+        this.campusLocation,
+        this.currentAddress,
+        this.permanentAddress,
+        this.graduationYear,
     });
 
     factory User.fromJson(Map<String, dynamic> json) => User(
@@ -142,6 +152,11 @@ class User {
         location: json["location"] == null ? null : Location.fromJson(json["location"]),
         relationshipStatus: json["relationshipStatus"],
         pincode: json["pincode"],
+        requestStatus: json["requestStatus"],
+        campusLocation: json["campusLocation"],
+        currentAddress: json["currentAddress"],
+        permanentAddress: json["permanentAddress"],
+        graduationYear: json["graduationYear"],
     );
 
     Map<String, dynamic> toJson() => {
@@ -161,6 +176,11 @@ class User {
         "location": location?.toJson(),
         "relationshipStatus": relationshipStatus,
         "pincode": pincode,
+        "requestStatus": requestStatus,
+        "campusLocation": campusLocation,
+        "currentAddress": currentAddress,
+        "permanentAddress": permanentAddress,
+        "graduationYear": graduationYear,
     };
 }
 
